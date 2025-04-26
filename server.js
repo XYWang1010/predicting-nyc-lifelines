@@ -114,7 +114,7 @@ let prompt = '';
 
 
 try {
-    const geojsonPath = path.join(__dirname, '..', 'data', 'bg_with_neighborlife.geojson');
+    const geojsonPath = path.join(__dirname, 'data', 'bg_with_neighborlife.geojson');
     const rawData = fs.readFileSync(geojsonPath, 'utf8');
     const geojson = JSON.parse(rawData);
 
