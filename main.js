@@ -380,13 +380,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-structureTime').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-structureTime').innerText = "Sorry, failed to load summary.";
-                    console.error("Summary Error:",err)
-                }
+                document.getElementById('info-ai-structureTime').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-structureTime').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 // income ai
             fetch(apiUrl,{
                 method: 'POST',
@@ -403,13 +402,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-income').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-income').innerText = "Sorry, failed to load summary.";
-                    console.error("Income Summary Error:",err)
-                }
+                document.getElementById('info-ai-income').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-income').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 // education ai
             fetch(apiUrl,{
                 method: 'POST',
@@ -426,13 +424,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-edu').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-edu').innerText = "Sorry, failed to load summary.";
-                    console.error("Education Summary Error:",err)
-                }
+                document.getElementById('info-ai-edu').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-edu').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 
 // rent ai
             fetch(apiUrl,{
@@ -450,13 +447,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-rent').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-rent').innerText = "Sorry, failed to load summary.";
-                    console.error("Rent Summary Error:",err)
-                }
+                document.getElementById('info-ai-rent').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-rent').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 
 // mapHeat
         const heatmapWidth = 360;
