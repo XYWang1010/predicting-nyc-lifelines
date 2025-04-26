@@ -275,7 +275,7 @@
             document.getElementById('info-rent').innerText = "Rent: " + feature.properties['rent'].toFixed(1) + " dollars per year";
 
 // openai api
-            const apiUrl='https://predicting-nyc-lifelines.onrender.com';
+            const apiUrl='https://predicting-nyc-lifelines.onrender.com/api/generate';
 
             fetch(apiUrl, {
                 method: 'POST',
@@ -314,14 +314,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                // console.log("Tree Density AI Summary:", data);
-                if (data && data.text) {
-                    document.getElementById('info-ai-tree').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-tree').innerText = "Sorry, failed to load summary.";
-                    console.error("Tree Density Summary Error:",err)
-                }
+                document.getElementById('info-ai-tree').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-tree').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 // air quality ai
             fetch(apiUrl,{
                 method: 'POST',
@@ -338,13 +336,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-air').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-air').innerText = "Sorry, failed to load summary.";
-                    console.error("Air Quality Summary Error:",err)
-                }
+                document.getElementById('info-ai-air').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-air').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 // building height ai
             fetch(apiUrl,{
                 method: 'POST',
@@ -361,13 +358,12 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data && data.text) {
-                    document.getElementById('info-ai-buildingHeight').innerText = data.text;
-                } else {
-                    document.getElementById('info-ai-buildingHeight').innerText = "Sorry, failed to load summary.";
-                    console.error("Building Height Summary Error:",err)
-                }
+                document.getElementById('info-ai-buildingHeight').innerText = data.text;
             })
+            .catch(err => {
+                document.getElementById('info-ai-buildingHeight').innerText = "Sorry, failed to load summary.";
+                console.error("AI Summary Error:", err);
+            });
 // structure time ai
             fetch(apiUrl,{
                 method: 'POST',
