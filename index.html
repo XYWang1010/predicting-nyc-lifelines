@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicting NYC Lifelines</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    </div>
+    <div id="container">
+        <div id="sidebar">
+            <div class="sidebar-item" id="life-expectancy">
+                <div class="section-header active" data-target="sidebar-life-content" id="LifeExpectancy">
+                    <h1 style="font-size: 27px; font-family: Orbitron, sans-serif;">Predicted Life Expectancy</h1>
+                    <h3 style="font-size: 16px;font-family: Orbitron, sans-serif;">of Different Block Groups in NYC</h3>
+                </div>
+                <div id="sidebar-life-content" class="section-content expanded">
+                    <p style="font-family: Orbitron, sans-serif;">Life Expectancy Average of NYC:</p>
+                    <h4 style="font-size: 20px; font-family: Orbitron, sans-serif;">80.332</h4>
+                    <p style="font-family: Orbitron, sans-serif;">Manhattan has the highest life expectancy among NYC boroughs, meanwhile the Bronx shows the lowest life expectancy.</p>
+                    <div id="boxplot-chart"></div>
+                    <!-- <p style="font-family: Orbitron, sans-serif;">Click on different block groups to see the details.</p> -->
+                </div>
+            </div>
+            <div class="sidebar-item" id="lifeExpectancy-index">
+                <div class="section-header" data-target="sidebar-lifeindex-content" id="Life-Expectancy-Score">
+                    <h3 style="font-size: 16px;font-family: Orbitron, sans-serif;">Set Up Your Own</h3>
+                    <h1 style="font-size: 24px; font-family: Orbitron, sans-serif;">Regional Scoring Mechanism</h1>
+                </div>
+                <div id="sidebar-lifeindex-content" class="section-content">
+                    <div id="life-index-legend" style="margin-top: 8px;"></div>
+                    <div id="factors-container" ondrop="drop(event, 'factors-container')" ondragover="allowDrop(event)">
+                        <div class="factor housing" draggable="true" ondragstart="drag(event)" id="factor1">Median House Value</div>
+                        <div class="factor environment" draggable="true" ondragstart="drag(event)" id="factor2">Air Quality</div>
+                        <div class="factor builtEnvironment" draggable="true" ondragstart="drag(event)" id="factor3">Avg Building Height</div>
+                        <div class="factor environment" draggable="true" ondragstart="drag(event)" id="factor4">Good Tree Density</div>
+                        <div class="factor socioeconomic" draggable="true" ondragstart="drag(event)" id="factor5">Poverty</div>
+                        <div class="factor housing" draggable="true" ondragstart="drag(event)" id="factor6">Rent</div>
+                        <div class="factor landuse" draggable="true" ondragstart="drag(event)" id="factor7">Residential Area FAR</div>
+                        <div class="factor landuse" draggable="true" ondragstart="drag(event)" id="factor8">Commercial Area FAR</div>
+                        <div class="factor socioeconomic" draggable="true" ondragstart="drag(event)" id="factor9">Median Income</div>
+                    </div>
+                    <div id="right-container" class="hidden" ondrop="drop(event, 'right-container')" ondragover="allowDrop(event)">
+                        <p style="word-spacing: 2px; letter-spacing: 2px; padding: 0px; margin: 0 0; text-align: left; font-size: 15px; color: #646464;">Dragging Factors Here: </p>
+                    </div>
+                    <div id="intro-container" class="hidden">
+                        <p style="word-spacing: 2px;font-family: Orbitron, sans-serif; word-spacing: 2px; padding: 0px; margin: 0 0; text-align: left; font-size: 14px; color: #3a3a3a;">After dragging the factors into the below box, it will score different regions based on the impact of these factors on life expectancy and their correlation with life expectancy, then color the map according to the scores. <b>Higher score means higher life expectancy.</b></p>
+                    </div>
+                    <div id="label-toggle-container" class="hidden">
+                        <div id="show-labels-button" class="toggle-button">
+                            <div class="circle" id="label-circle"><div class="inner-dot"></div></div>
+                            <span style="font-size: 15.5px;">Display the label of the high-score area</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="info-panel">
+            <div id="box" style="margin-top:0px; margin-bottom: 20px; max-width: 400px;padding:5px">
+                <h1 id="info-block-group" style="font-family: Orbitron, sans-serif; font-size: 35px;"></h1>
+                <p id="info-census-tract" style="font-family: Orbitron, sans-serif; font-size: 16px;"></p>
+                <p id="info-ntaname" style="font-family: Orbitron, sans-serif; font-size: 16px;"></p>
+                <p id="info-cdtaname" style="font-family: Orbitron, sans-serif; font-size: 16px;"></p>
+                <p id="info-county" style="font-family: Orbitron, sans-serif; font-size: 16px;"></p>
+            </div>
+            <div class="info-section expanded">
+                <h4 data-target="life-expectancy-content" class="info-header" style="font-size: 24px;">
+                    Life Expectancy
+                    <span class="info-icon" data-tooltip="Life expectancy is a value that refers to the average number of years a person is expected to live, a key indicator of the overall health level of a region.">
+                        <img src="label/001-pulse.png" alt="info" />
+                    </span>
+                </h4>
+                <div id="life-expectancy-content" class="info-content expanded">
+                    <p id="info-life-expectancy" style="font-family: Orbitron, sans-serif;"></p>
+                    <div id="heatmap-strip" style="margin-top: 30px;"></div>
+                    <div id="life-expectancy-legend" style="margin-top: 15px;"></div>
+                    <p id="info-ai-summary" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                </div>
+            </div>
+            <div style="margin: 20px 0 18px 0; text-align: left; font-family: Orbitron, sans-serif; background: rgba(50, 50, 50, 0.8); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; padding:3px; border-top: 1px solid #ccc;"></div>
+            <div style="margin: 10px 0 25px 0; text-align: left; font-family: Orbitron, sans-serif; background: rgba(50, 50, 50, 0.8); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center;padding:2px">
+                <p style="padding: 0 16px; font-family: Orbitron, sans-serif; font-size: 15px;color: #eeeeee; z-index: 1;">Below are factors closely linked to life expectancy and the area's living environment.</p>
+                <img src="label/002-up-arrow-10.png" style="width:32px; height:auto; margin-right:8px; z-index:1;" alt="arrow">
+            </div>
+            <div class="info-section expanded">
+                <h4 class="info-header" data-target="env-group-content-nature">
+                    Natural Environment Factors
+                    <span class="info-icon-2" data-tooltip="INCLUDING:
+                                                            Tree Density (Correlation: 0.165)
+                                                            Air Quality (Correlation: 0.067)">
+                        <img src="label/info.png" alt="info" />
+                    </span>
+                </h4>
+                <div id="env-group-content-nature" class="info-content">
+                    <div class="info-section expanded">
+                        <p data-target="tree-density-content" class="sub-info-header">
+                            Tree Density
+                            <span class="sub-info-icon" data-tooltip="Calculated by the number of trees within a block group divided by the size of that area, expressed as the number of trees per square kilometer.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="tree-density-content" class="sub-info-content">
+                            <p id="info-tree-density" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map" style="margin-top: 12px;"></div>
+                            <div id="tree-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-tree" style="font-family: Orbitron, sans-serif; color:#333;"></p>
+                        </div>
+                    </div>
+                    <div class="info-section expanded">
+                        <p data-target="air-quality-content" class="sub-info-header">
+                            Air Quality
+                            <span class="sub-info-icon" data-tooltip="Determined based on the concentration of pollutants in the air. The value shown below represents the concentration of PM2.5. PM2.5 refers to fine particulate matter with a diameter of 2.5 micrometers or smaller, which can be inhaled into the lungs and pose serious health risks.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="air-quality-content" class="sub-info-content">
+                            <p id="info-air-quality" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-air" style="margin-top: 12px;"></div>
+                            <div id="air-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-air" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-section expanded">
+                <h4 class="info-header" data-target="env-group-content-build">
+                    Built Environment Factors
+                    <span class="info-icon-2" data-tooltip="INCLUDING:
+                                                            Average Building Height (Correlation: -0.37)
+                                                            Structure Built Time (Correlation: 0.40)">
+                        <img src="label/info.png" alt="info" />
+                    </span>
+                </h4>
+                <div id="env-group-content-build" class="info-content">
+                    <div class="info-section expanded">
+                        <p data-target="building-height-content" class="sub-info-header">
+                            Average Building Height
+                            <span class="sub-info-icon" data-tooltip="Calculated based on the total building height and the number of buildings within the area.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="building-height-content" class="sub-info-content">
+                            <p id="info-building-height" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-buildingHeight" style="margin-top: 12px;"></div>
+                            <div id="buildingHeight-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-buildingHeight" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                    <div class="info-section expanded">
+                        <p data-target="structure-time-content" class="sub-info-header">
+                            %Structures Built in Earlier Years
+                            <span class="sub-info-icon" data-tooltip="Percentage of sturctures built before 1960.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="structure-time-content" class="sub-info-content">
+                            <p id="info-structure-time" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-structureTime" style="margin-top: 12px;"></div>
+                            <div id="structureTime-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-structureTime" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-section expanded">
+                <h4 class="info-header" data-target="env-group-content-socioeco">
+                    Socioeconomic Factors
+                    <span class="info-icon-2" data-tooltip="INCLUDING:
+                                                            Per Capita Income (Correlation: 0.431)
+                                                            %Less Than High School (Correlation: -0.349)
+                                                            Rent (Correlation: 0.427)">
+                        <img src="label/info.png" alt="info" />
+                    </span>
+                </h4>
+                <div id="env-group-content-socioeco" class="info-content">
+                    <div class="info-section expanded">
+                        <p data-target="income-content" class="sub-info-header">
+                            Per Capita Income
+                            <span class="sub-info-icon" data-tooltip="Per capita income is the average income earned per person in a specific area, calculated by dividing the total income by the population.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="income-content" class="sub-info-content">
+                            <p id="info-income" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-income" style="margin-top: 12px;"></div>
+                            <div id="income-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-income" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                    <div class="info-section expanded">
+                        <p data-target="edu-content" class="sub-info-header">
+                            %Less Than High School
+                            <span class="sub-info-icon" data-tooltip="The Ratio of people whose educational attainment is below high school level.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="edu-content" class="sub-info-content">
+                            <p id="info-edu" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-edu" style="margin-top: 12px;"></div>
+                            <div id="edu-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-edu" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                    <div class="info-section expanded">
+                        <p data-target="rent-content" class="sub-info-header">
+                            Rent
+                            <span class="sub-info-icon" data-tooltip="Median gross rent of each block group.">
+                                <img src="label/info.png" alt="info" />
+                            </span>
+                        </p>
+                        <div id="rent-content" class="sub-info-content">
+                            <p id="info-rent" style="font-family: Orbitron, sans-serif;"></p>
+                            <div id="tree-map-rent" style="margin-top: 12px;"></div>
+                            <div id="rent-legend" style="margin-top: 8px;"></div>
+                            <p id="info-ai-rent" style="font-family: Orbitron, sans-serif; color:#333;margin-top: 5px;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="close-info">×</button>
+        </div>
+    </div>
+    <div id="map-container"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="main.js"></script>
+    <script src="map.js"></script>
+    <script src="sidebar.js"></script>
+</body>
+</html>
