@@ -275,7 +275,7 @@
             document.getElementById('info-rent').innerText = "Rent: " + feature.properties['rent'].toFixed(1) + " dollars per year";
 
 // openai api
-            const apiUrl='http://localhost:3000/api/generate';
+            const apiUrl='https://predicting-nyc-lifelines.onrender.com';
 
             fetch(apiUrl, {
                 method: 'POST',
