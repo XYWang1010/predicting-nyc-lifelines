@@ -12,7 +12,13 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: 'https://xywang1010.github.io',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const openai = new OpenAI({
