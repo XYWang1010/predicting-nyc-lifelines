@@ -11,6 +11,17 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
+const geojsonPath = path.join(__dirname, 'data', 'bg_with_neighborlife.geojson');
+let geojsonData = null;
+
+try {
+    const rawData = fs.readFileSync(geojsonPath, 'utf8');
+    geojsonData = JSON.parse(rawData);
+    console.log('✅ GeoJSON loaded successfully.');
+} catch (error) {
+    console.error('❌ Failed to load GeoJSON:', error);
+}
+
 const app = express();
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://xywang1010.github.io');
@@ -126,9 +137,7 @@ let prompt = '';
 
 
 try {
-    const geojsonPath = path.join(__dirname, 'data', 'bg_with_neighborlife.geojson');
-    const rawData = fs.readFileSync(geojsonPath, 'utf8');
-    const geojson = JSON.parse(rawData);
+    const geojson = geojsonData;
 
     let leAnalysis = null;
 
