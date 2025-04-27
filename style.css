@@ -462,7 +462,8 @@ margin-top: 20px;
     resize: none;
     z-index: 10;
     border: 2px dashed #5a5a5a;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden
 }
 #intro-container.hidden {
     display: none;
